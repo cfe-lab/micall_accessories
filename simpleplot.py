@@ -22,8 +22,8 @@ def parse_args():
         'blast_csv',
         type=Path
     )
-    parser.add_argument('fasta')
-    parser.add_argument('hivseqinr_results')
+    parser.add_argument('fasta', type=Path)
+    parser.add_argument('hivseqinr_results', type=Path)
     args = parser.parse_args()
     return args
 
