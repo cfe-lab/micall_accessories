@@ -13,7 +13,7 @@ import micall.core.plot_contigs as plot_contigs
 
 def main(args):
     with open(args.blast_csv) as f:
-        plot_blast(f, args.fasta)
+        plot_blast(f, args.fasta, args.hivseqinr_results)
 
 
 def parse_args():
@@ -23,6 +23,7 @@ def parse_args():
         type=Path
     )
     parser.add_argument('fasta')
+    parser.add_argument('hivseqinr_results')
     args = parser.parse_args()
     return args
 
@@ -82,7 +83,16 @@ def get_colors():
     return colors
 
 
-def plot_blast(blast_csv, fasta):
+def get_states(hivseqinr_results):
+    results = {}
+    reader = DictReader(hivseqinr_results)
+    for row in reader:
+        results[row['SEQID']] = row['MyVerdict']
+    return results
+
+
+def plot_blast(blast_csv, fasta, hivseqinr_results):
+    states = get_states(hivseqinr_results)
     padding = 2
     colors = get_colors()
     reader = DictReader(blast_csv)
@@ -92,7 +102,7 @@ def plot_blast(blast_csv, fasta):
     contig_names = get_contig_names(fasta)
     with open('./contig_names', 'w') as f:
         yaml.dump(contig_names, f)
-    
+
     min_start = 638
     max_end = 9604
 
@@ -123,7 +133,7 @@ def plot_blast(blast_csv, fasta):
         subtracks = []
         group = merge_group(group)
         for block in group:
-            state = contig_names[int(contig_num)].split('::')[1]
+            state = states[contig_names[int(contig_num)]]
             block_track = Track(
                 block[0],
                 block[1],
