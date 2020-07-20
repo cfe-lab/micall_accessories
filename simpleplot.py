@@ -85,9 +85,10 @@ def get_colors():
 
 def get_states(hivseqinr_results):
     results = {}
-    reader = DictReader(hivseqinr_results)
-    for row in reader:
-        results[row['SEQID']] = row['MyVerdict']
+    with open(hivseqinr_results, newline='') as csvfile:
+        reader = DictReader(csvfile)
+        for row in reader:
+            results[row['SEQID']] = row['MyVerdict']
     return results
 
 
